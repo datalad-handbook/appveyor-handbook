@@ -63,11 +63,21 @@ environment:
       PY: 3.8
       INSTALL_SYSPKGS: git-annex
 
+
+# turn of support for MS project build support (not needed)
+build: off
+
 init:
-  # WINDOWS enable long paths
+  # remove windows 260-char limit on path names
   - cmd: powershell Set-Itemproperty -path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -value 1
-  - cmd: "set PATH=C:\\msys64\\usr\\bin;%PATH%"
+  # enable RDP access on windows (RDP password is in appveyor project config)
+  # this is relatively expensive (1-2min), but very convenient to jump into any build at any time
+  - cmd: powershell.exe iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  # Missing software
   - sh: "[ -n \"$INSTALL_SYSPKGS\" ] && ( [ \"x${APPVEYOR_BUILD_WORKER_IMAGE}\" = \"xmacOS\" ] && brew install -q ${INSTALL_SYSPKGS} || sudo apt-get install --no-install-recommends -y ${INSTALL_SYSPKGS} ) || true"
+  # Identity setup
+  - git config --global user.email "test@appveyor.land"
+  - git config --global user.name "Appveyor Almighty"
   # If a particular Python version is requested, use env setup (using the
   # appveyor provided environments/installation). Note, these are broken
   # on the ubuntu images
@@ -77,11 +87,26 @@ init:
   - sh: "[ \"x$PY\" != x ] && . ${HOME}/venv${PY}/bin/activate || virtualenv -p 3 ${HOME}/dlvenv && . ${HOME}/dlvenv/bin/activate; ln -s \"$VIRTUAL_ENV\" \"${HOME}/VENV\""
   - cmd: "set PATH=C:\\Python%PY%;C:\\Python%PY%\\Scripts;%PATH%"
   # Scratch space
-  - cmd: md C:\home
-  - sh: mkdir ~/home
+  - cmd: md C:\TMP
+  - sh: mkdir ~/TMP
+  # Temporary keys for localhost access in default place
+  - cmd: ssh-keygen -f C:\Users\appveyor\.ssh\id_rsa -N ""
+  - sh: ssh-keygen -f ~/.ssh/id_rsa -N ""
+
 
 install:
+  - echo "Stop">BLOCK
+  # deploy standard SSH config for localhost access on Windows
+  - cmd: tools\ci\appveyor_ssh2localhost.bat
+  # enable external SSH access to CI worker on all other systems
+  # needs APPVEYOR_SSH_KEY defined in project settings (or environment)
+  - sh: curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
+  - sh: sh tools/ci/appveyor_ssh2localhost.sh
+  # Install git-annex on windows, otherwise INSTALL_SYSPKGS can be used
   - cmd: tools\ci\appveyor_install_git-annex.bat
+
+
+build_script:
   - git clone --recurse-submodules --remote-submodules https://github.com/datalad-handbook/book.git
   - cd book
   - pip install -r requirements.txt
@@ -91,10 +116,6 @@ install:
   - cmd: 7z e rsvg-convert-2.40.20.7z
   - cmd: "set PATH=C:\\c\\projects\\rsvg-convert.exe;%PATH%"
 
-build_script:
-  - pip install nose coverage
-
-
 before_test:
   # test SSH login
   - datalad wtf
@@ -103,3 +124,8 @@ test_script:
   - cmd: md C:\home\me
   - sh: mkdir -r /home/me
   - make
+
+on_finish:
+  # conditionally block the exit of a CI run for direct debugging
+  - sh: while [ -f ~/BLOCK ]; do sleep 5; done
+  - cmd: powershell.exe while ((Test-Path "C:\Users\\appveyor\\Desktop\\BLOCK.txt")) { Start-Sleep 5 }
