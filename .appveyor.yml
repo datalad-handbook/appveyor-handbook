@@ -67,12 +67,6 @@ init:
   # WINDOWS enable long paths
   - cmd: powershell Set-Itemproperty -path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -value 1
   - cmd: "set PATH=C:\\msys64\\usr\\bin;%PATH%"
-  # WINDOWS install chocolatey with non-admin privileges following https://gist.github.com/ferventcoder/78fa6b6f4d6e2b12c89680cbc0daec78
-  - cmd: SET INSTALLDIR=${INSTALLDIR}
-  - cmd: setx ChocolateyInstall %INSTALLDIR%
-  - cmd: SET chocolateyUseWindowsCompression=true
-  - cmd: powershell -NoProfile -ExecutionPolicy Bypass -Command "(iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))) >$null 2>&1" && SET PATH="%PATH%;%INSTALLDIR%\bin"
-  - cmd: CALL choco install gnuwin32-coreutils.portable
   - sh: "[ -n \"$INSTALL_SYSPKGS\" ] && ( [ \"x${APPVEYOR_BUILD_WORKER_IMAGE}\" = \"xmacOS\" ] && brew install -q ${INSTALL_SYSPKGS} || sudo apt-get install --no-install-recommends -y ${INSTALL_SYSPKGS} ) || true"
   # If a particular Python version is requested, use env setup (using the
   # appveyor provided environments/installation). Note, these are broken
