@@ -133,6 +133,9 @@ test_script:
   - cmd: md C:\home\me
   - sh: sudo mkdir /home/me
   - sh: sudo chown $USER:$USER /home/me
+  # first, wipe out existing files
+  - make clean
+  # then, start over
   - make
 
 on_finish:
