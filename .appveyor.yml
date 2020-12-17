@@ -49,11 +49,11 @@ environment:
   # an intelligible name can help to locate a specific test run
   matrix:
     ## Windows core tests
-    - ID: WinP38core
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      INSTALLDIR: c:\ProgramData\chocoportable
+    #- ID: WinP38core
+    #  APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    #  INSTALLDIR: c:\ProgramData\chocoportable
       # Python version specification is non-standard on windows
-      PY: 38-x64
+    #  PY: 38-x64
     - ID: Ubu20core
       APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
       INSTALL_SYSPKGS: python3-virtualenv git-annex librsvg2-bin
