@@ -134,7 +134,7 @@ build_script:
 
 before_test:
   # test SSH login
-  - datalad wtf
+  #- datalad wtf
 
 test_script:
   - cmd: md C:\home\me
