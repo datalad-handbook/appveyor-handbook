@@ -88,5 +88,15 @@ install:
   - pip install -e .
   - python -m pip install git+https://github.com/datalad/datalad.git@master
 
+build_script:
+  - pip install nose coverage
+
+
+before_test:
+  # test SSH login
+  - datalad wtf
+
 test_script:
+  - cmd: md /home/me
+  - sh: mkdir /home/me
   - make
