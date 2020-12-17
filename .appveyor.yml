@@ -1,0 +1,98 @@
+# This CI setup provides a largely homogeneous configuration across all
+# major platforms (Windows, MacOS, and Linux). The aim of this test setup is
+# to create a "native" platform experience, using as few cross-platform
+# helper tools as possible.
+#
+# On Linux/Mac a virtualenv is used for testing. The effective virtual env
+# is available under ~/VENV.
+#
+# All workers support remote login. Login details are shown at the top of each
+# CI run log.
+#
+# - Linux/Mac workers (via SSH):
+#
+#   - A permitted SSH key must be defined in an APPVEYOR_SSH_KEY environment
+#     variable (via the appveyor project settings)
+#
+#   - SSH login info is given in the form of: 'appveyor@67.225.164.xx -p 22xxx'
+#
+#   - Login with:
+#
+#     ssh -o StrictHostKeyChecking=no <LOGIN>
+#
+#   - to prevent the CI run from exiting, `touch` a file named `BLOCK` in the
+#     user HOME directory (current directory directly after login). The session
+#     will run until the file is removed (or 60 min have passed)
+#
+# - Windows workers (via RDP):
+#
+#   - An RDP password should be defined in an APPVEYOR_RDP_PASSWORD environment
+#     variable (via the appveyor project settings), or a random password is used
+#     every time
+#
+#   - RDP login info is given in the form of IP:PORT
+#
+#   - Login with:
+#
+#     xfreerdp /cert:ignore /dynamic-resolution /u:appveyor /p:<PASSWORD> /v:<LOGIN>
+#
+#   - to prevent the CI run from exiting, create a textfile named `BLOCK` on the
+#     Desktop (a required .txt extension will be added automatically). The session
+#     will run until the file is removed (or 60 min have passed)
+
+environment:
+  #DATALAD_TESTS_SSH: 1
+
+  # Do not use `image` as a matrix dimension, to have fine-grained control over
+  # what tests run on which platform
+  # The ID variable had no impact, but sorts first in the CI run overview
+  # an intelligible name can help to locate a specific test run
+  matrix:
+    ## Windows core tests
+    - ID: WinP38core
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      INSTALLDIR: c:\ProgramData\chocoportable
+      # Python version specification is non-standard on windows
+      PY: 38-x64
+    - ID: Ubu20core
+      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
+      INSTALL_SYSPKGS: python3-virtualenv git-annex
+    # MacOS core tests
+    - ID: MacP38core
+      APPVEYOR_BUILD_WORKER_IMAGE: macOS
+      PY: 3.8
+      INSTALL_SYSPKGS: git-annex
+
+init:
+  # WINDOWS enable long paths
+  - cmd: powershell Set-Itemproperty -path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name LongPathsEnabled -value 1
+  - cmd: "set PATH=C:\\msys64\\usr\\bin;%PATH%"
+  # WINDOWS install chocolatey with non-admin privileges following https://gist.github.com/ferventcoder/78fa6b6f4d6e2b12c89680cbc0daec78
+  - cmd: SET INSTALLDIR=${INSTALLDIR}
+  - cmd: setx ChocolateyInstall %INSTALLDIR%
+  - cmd: SET chocolateyUseWindowsCompression=true
+  - cmd: powershell -NoProfile -ExecutionPolicy Bypass -Command "(iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))) >$null 2>&1" && SET PATH="%PATH%;%INSTALLDIR%\bin"
+  - cmd: CALL choco install gnuwin32-coreutils.portable
+  - sh: "[ -n \"$INSTALL_SYSPKGS\" ] && ( [ \"x${APPVEYOR_BUILD_WORKER_IMAGE}\" = \"xmacOS\" ] && brew install -q ${INSTALL_SYSPKGS} || sudo apt-get install --no-install-recommends -y ${INSTALL_SYSPKGS} ) || true"
+  # If a particular Python version is requested, use env setup (using the
+  # appveyor provided environments/installation). Note, these are broken
+  # on the ubuntu images
+  # https://help.appveyor.com/discussions/problems/28217-appveyor-ubunu-image-with-python3-lzma-module
+  # Otherwise create a virtualenv using the default Python 3, to enable uniform
+  # use of python/pip executables below
+  - sh: "[ \"x$PY\" != x ] && . ${HOME}/venv${PY}/bin/activate || virtualenv -p 3 ${HOME}/dlvenv && . ${HOME}/dlvenv/bin/activate; ln -s \"$VIRTUAL_ENV\" \"${HOME}/VENV\""
+  - cmd: "set PATH=C:\\Python%PY%;C:\\Python%PY%\\Scripts;%PATH%"
+  # Scratch space
+  - cmd: md C:\home
+  - sh: mkdir ~/home
+
+install:
+  - cmd: tools\ci\appveyor_install_git-annex.bat
+  - git clone https://github.com/datalad-handbook/book.git
+  - cd book
+  - pip install -r requirements.txt
+  - pip install -e .
+  - datalad get docs/artwork
+
+test_script:
+  - make
