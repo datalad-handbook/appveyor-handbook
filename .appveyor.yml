@@ -95,7 +95,9 @@ init:
 
 
 install:
+  # Blocker files to pause the job
   - cmd: echo "Stop" > C:\Users\appveyor\Desktop\BLOCK.txt
+  - sh: touch ~/BLOCK
   # deploy standard SSH config for localhost access on Windows
   - cmd: tools\ci\appveyor_ssh2localhost.bat
   # enable external SSH access to CI worker on all other systems
