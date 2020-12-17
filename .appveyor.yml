@@ -118,7 +118,7 @@ build_script:
   - pip install -e .
   # one section needs DVC, we need nose for a method to make push targets, and we need
   # the python packages for the midterm project
-  - pip install dvc nose pandas sklearn seaborn
+  - pip install dvc nose pandas sklearn seaborn scikit-image numpy
   # get recent datalad version
   - python -m pip install git+https://github.com/datalad/datalad.git@maint
   - datalad get docs/artwork
@@ -141,7 +141,7 @@ test_script:
   - sh: sudo mkdir /home/me
   - sh: sudo chown $USER:$USER /home/me
   # first, wipe out existing files
-  - make clean
+  - make clean-examples
   # then, start over
   - make
 
