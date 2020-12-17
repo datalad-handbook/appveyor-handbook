@@ -111,14 +111,19 @@ install:
 
 
 build_script:
-  - git clone --recurse-submodules --remote-submodules https://github.com/datalad-handbook/book.git
+  - git clone https://github.com/datalad-handbook/book.git
   - cd book
   - sh: pip install --upgrade pip
   - pip install -r requirements.txt
   - pip install -e .
-  # one section needs DVC
-  - pip install dvc
+  # one section needs DVC, we need nose for a method to make push targets, and we need
+  # the python packages for the midterm project
+  - pip install dvc nose pandas sklearn seaborn
+  # get recent datalad version
   - python -m pip install git+https://github.com/datalad/datalad.git@master
+  - datalad get docs/artwork
+  # install datalad extensions
+  - pip install datalad-container
   # download and extract compiled rsvgconvert on windows
   - cmd: curl -LO https://kumisystems.dl.sourceforge.net/project/tumagcc/rsvg-convert-2.40.20.7z
   - cmd: 7z e rsvg-convert-2.40.20.7z
