@@ -82,12 +82,11 @@ init:
 
 install:
   - cmd: tools\ci\appveyor_install_git-annex.bat
-  - git clone https://github.com/datalad-handbook/book.git
+  - git clone --recurse-submodules --remote-submodules https://github.com/datalad-handbook/book.git
   - cd book
   - pip install -r requirements.txt
   - pip install -e .
   - python -m pip install git+https://github.com/datalad/datalad.git@master
-  - datalad get docs/artwork
 
 test_script:
   - make
