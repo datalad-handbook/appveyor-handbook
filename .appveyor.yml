@@ -97,6 +97,6 @@ before_test:
   - datalad wtf
 
 test_script:
-  - cmd: md /home/me
-  - sh: mkdir /home/me
+  - cmd: md C:\home\me
+  - sh: mkdir -r /home/me
   - make
