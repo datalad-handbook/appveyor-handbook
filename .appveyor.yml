@@ -126,7 +126,7 @@ before_test:
 
 test_script:
   - cmd: md C:\home\me
-  - sh: mkdir -r /home/me
+  - sh: mkdir -p /home/me
   - make
 
 on_finish:
