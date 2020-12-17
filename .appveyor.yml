@@ -120,7 +120,7 @@ build_script:
   # the python packages for the midterm project
   - pip install dvc nose pandas sklearn seaborn
   # get recent datalad version
-  - python -m pip install git+https://github.com/datalad/datalad.git@master
+  - python -m pip install git+https://github.com/datalad/datalad.git@maint
   - datalad get docs/artwork
   # install datalad extensions
   - pip install datalad-container
