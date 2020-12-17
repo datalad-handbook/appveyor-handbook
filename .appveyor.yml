@@ -104,10 +104,6 @@ install:
   - sh: sh tools/ci/appveyor_ssh2localhost.sh
   # Install git-annex on windows, otherwise INSTALL_SYSPKGS can be used
   - cmd: tools\ci\appveyor_install_git-annex.bat
-  - pip install --upgrade --user pip
-  - cmd: pip install --user virtualenv
-  - cmd: virtualenv --python=python3 venv
-  - cmd: venv\Scripts\activate.bat
 
 
 build_script:
