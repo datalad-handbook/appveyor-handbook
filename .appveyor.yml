@@ -126,7 +126,8 @@ before_test:
 
 test_script:
   - cmd: md C:\home\me
-  - sh: mkdir -p /home/me
+  - sh: sudo mkdir /home/me
+  - sh: sudo chown $USER:$USER /home/me
   - make
 
 on_finish:
