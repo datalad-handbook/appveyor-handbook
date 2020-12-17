@@ -54,9 +54,9 @@ environment:
       INSTALLDIR: c:\ProgramData\chocoportable
       # Python version specification is non-standard on windows
       PY: 38-x64
-    #- ID: Ubu20core
-    #  APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
-    #  INSTALL_SYSPKGS: python3-virtualenv git-annex librsvg2-bin
+    - ID: Ubu20core
+      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
+      INSTALL_SYSPKGS: python3-virtualenv git-annex librsvg2-bin
     # MacOS core tests
     #- ID: MacP38core
     #  APPVEYOR_BUILD_WORKER_IMAGE: macOS
