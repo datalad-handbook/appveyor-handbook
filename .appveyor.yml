@@ -87,6 +87,9 @@ install:
   - pip install -r requirements.txt
   - pip install -e .
   - python -m pip install git+https://github.com/datalad/datalad.git@master
+  - cmd: wget https://kumisystems.dl.sourceforge.net/project/tumagcc/rsvg-convert-2.40.20.7z
+  - cmd: 7z e rsvg-convert-2.40.20.7z
+  - cmd: "set PATH=C:\\c\\projects\\rsvg-convert.exe;%PATH%"
 
 build_script:
   - pip install nose coverage
