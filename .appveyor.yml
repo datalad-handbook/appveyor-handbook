@@ -140,7 +140,7 @@ test_script:
   - cmd: md C:\home\me
   - sh: sudo mkdir /home/me
   - sh: sudo chown $USER:$USER /home/me
-  # first, wipe out existing files
+  # first, wipe out existing files from the basics
   - make clean-examples
   # then, start over
   - make
