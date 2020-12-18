@@ -56,7 +56,7 @@ environment:
     #  PY: 38-x64
     - ID: Ubu20core
       APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
-      INSTALL_SYSPKGS: python3-virtualenv git-annex librsvg2-bin imagemagick singularity-container
+      INSTALL_SYSPKGS: python3-virtualenv git-annex librsvg2-bin imagemagick
     # MacOS core tests
     #- ID: MacP38core
     #  APPVEYOR_BUILD_WORKER_IMAGE: macOS
@@ -106,6 +106,7 @@ install:
   # needs APPVEYOR_SSH_KEY defined in project settings (or environment)
   - sh: curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
   - sh: sh tools/ci/appveyor_ssh2localhost.sh
+  - sh: sh tools/ci/install_singularity_ubuntu.sh
   # Install git-annex on windows, otherwise INSTALL_SYSPKGS can be used
   - cmd: tools\ci\appveyor_install_git-annex.bat
 
