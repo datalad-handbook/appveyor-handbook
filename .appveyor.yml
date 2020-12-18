@@ -141,6 +141,8 @@ test_script:
   - cmd: md C:\home\me
   - sh: sudo mkdir /home/me
   - sh: sudo chown $USER:$USER /home/me
+  - sh: HOME=/home/me git config --global user.name "Elena Piscopia"
+  - sh: HOME=/home/me git config --global user.email "elena@example.net"
   # first, wipe out existing files from the basics
   - make clean-examples
   # then, start over
