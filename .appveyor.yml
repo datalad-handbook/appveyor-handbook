@@ -61,7 +61,7 @@ environment:
     #- ID: MacP38core
     #  APPVEYOR_BUILD_WORKER_IMAGE: macOS
     #  PY: 3.8
-    #  INSTALL_SYSPKGS: git-annex
+    #  INSTALL_SYSPKGS: git-annex imagemagick
 
 
 # turn of support for MS project build support (not needed)
