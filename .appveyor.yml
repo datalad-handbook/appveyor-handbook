@@ -121,6 +121,7 @@ build_script:
   - pip install dvc nose pandas sklearn seaborn scikit-image numpy
   # get recent datalad version
   - python -m pip install git+https://github.com/datalad/datalad.git@maint
+  - datalad wtf
   - datalad get docs/artwork
   # install datalad extensions
   - pip install datalad-container
